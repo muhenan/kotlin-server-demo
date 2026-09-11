@@ -1,0 +1,22 @@
+@baseUrl = http://localhost:8080
+
+### Health
+GET {{baseUrl}}/health
+
+### Query parameter
+GET {{baseUrl}}/api/v1/hello?name=Kotlin
+
+### Path parameter (demo data)
+GET {{baseUrl}}/api/v1/users/42
+
+### JSON request body
+POST {{baseUrl}}/api/v1/echo
+Content-Type: application/json
+
+{"message":"Hello Ktor"}
+
+### Validation error (400)
+POST {{baseUrl}}/api/v1/echo
+Content-Type: application/json
+
+{"message":" "}
