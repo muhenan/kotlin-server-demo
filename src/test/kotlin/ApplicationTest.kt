@@ -9,6 +9,27 @@ import kotlin.test.*
 
 class ApplicationTest {
     @Test
+    fun `Swagger serves local assets and documents all demo endpoints`() = testApplication {
+        environment { config = io.ktor.server.config.ApplicationConfig("application.conf") }
+        val page = client.get("/swagger")
+        assertEquals(HttpStatusCode.OK, page.status)
+        assertTrue(page.bodyAsText().contains("/swagger-assets@5.31.0/swagger-ui-bundle.js"))
+        for (asset in listOf("swagger-ui.css", "swagger-ui-bundle.js", "swagger-ui-standalone-preset.js")) {
+            assertEquals(HttpStatusCode.OK, client.get("/swagger-assets@5.31.0/$asset").status)
+        }
+        val response = client.get("/swagger/openapi.json")
+        assertEquals(HttpStatusCode.OK, response.status)
+        val doc = Json.parseToJsonElement(response.bodyAsText()).jsonObject
+        val paths = doc.getValue("paths").jsonObject
+        assertEquals(setOf("/health", "/api/v1/hello", "/api/v1/users/{id}", "/api/v1/echo"), paths.keys)
+        val user = paths.getValue("/api/v1/users/{id}").jsonObject.getValue("get").jsonObject
+        assertEquals(true, user.getValue("parameters").jsonArray.single().jsonObject.getValue("required").jsonPrimitive.boolean)
+        assertTrue(user.getValue("responses").jsonObject.containsKey("400"))
+        val echo = paths.getValue("/api/v1/echo").jsonObject.getValue("post").jsonObject
+        assertTrue(echo.getValue("requestBody").jsonObject.getValue("content").jsonObject.containsKey("application/json"))
+    }
+
+    @Test
     fun `GET endpoints support query and path parameters`() = testApplication {
         environment { config = io.ktor.server.config.ApplicationConfig("application.conf") }
         val health = client.get("/health")

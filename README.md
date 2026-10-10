@@ -16,6 +16,12 @@ $env:JAVA_HOME = 'C:\Users\Administrator\.jdks\openjdk-26.0.2.1'
 ```
 
 Open http://localhost:8080/health. Stop with Ctrl+C.
+Open http://localhost:8080/swagger for interactive API testing in your browser.
+Expand an endpoint, click **Try it out**, enter parameters or a JSON body, then click **Execute**.
+For echo, try `{"message":"Hello Ktor"}`; for users, try ID `42` (or `0` to see a 400 error).
+The OpenAPI JSON is served at `/swagger/openapi.json` and generated from route descriptions
+and Kotlin serialization models, with no separate YAML file to maintain.
+Swagger UI assets are bundled locally, so the browser does not need a CDN or an IDE.
 The default bind address is `127.0.0.1`; override with `HOST` and `PORT` environment variables.
 In IntelliJ IDEA, reload the Gradle project and run the Gradle `application > run` task.
 
